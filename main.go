@@ -27,13 +27,14 @@ func main() {
     default:
       termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 
-      drawTetromino(TetrominoI, 0, 0)
-      drawTetromino(TetrominoJ, 1, 1)
-      drawTetromino(TetrominoL, 3, 1)
-      drawTetromino(TetrominoO, 5, 2)
-      drawTetromino(TetrominoS, 7, 1)
-      drawTetromino(TetrominoT, 9, 2)
-      drawTetromino(TetrominoZ, 12, 1)
+      drawTetromino(TetrominoI, 0, 0, 0)
+      drawTetromino(TetrominoJ, 1, 1, 0)
+      drawTetromino(TetrominoL, 3, 1, 0)
+      drawTetromino(TetrominoO, 5, 2, 0)
+      drawTetromino(TetrominoS, 7, 1, 0)
+      drawTetromino(TetrominoT, 9, 2, 0)
+      drawTetromino(TetrominoZ, 12, 1, 1)
+      // drawBoard()
 
       termbox.Flush()
 
