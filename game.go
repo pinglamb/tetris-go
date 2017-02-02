@@ -14,6 +14,8 @@ var currentTetrominoY int
 var nextTetromino Tetromino
 var holdedTetromino Tetromino
 
+var hasTetrominoHolded = false
+
 var gravity = 1
 
 var gameTicker *time.Ticker
@@ -49,12 +51,15 @@ func tickGame() {
 }
 
 func newTetromino() {
-  currentTetromino = nextTetromino
-  currentTetrominoX = 4
+  addTetromino(nextTetromino)
+  nextTetromino = randTetromino()
+}
+
+func addTetromino(t Tetromino) {
+  currentTetromino = t
+  currentTetrominoX = 5
   currentTetrominoY = 0
   currentTetrominoSpin = 0
-
-  nextTetromino = randTetromino()
 }
 
 func randTetromino() Tetromino {
@@ -63,6 +68,15 @@ func randTetromino() Tetromino {
 }
 
 func holdTetronmino() {
+  if hasTetrominoHolded {
+    tmp := currentTetromino
+    addTetromino(holdedTetromino)
+    holdedTetromino = tmp
+  } else {
+    hasTetrominoHolded = true
+    holdedTetromino = currentTetromino
+    newTetromino()
+  }
 }
 
 func landTetromino() {

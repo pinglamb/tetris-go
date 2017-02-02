@@ -41,6 +41,8 @@ func main() {
         moveTetrominoRight()
       case 'j':
         spinTetromino()
+      case 'h':
+        holdTetronmino()
       }
     default:
       termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
