@@ -30,19 +30,21 @@ func main() {
         }
       }
 
-      switch e.Ch {
-      case 'w':
-        dropTetromino()
-      case 's':
-        moveTetrominoDown()
-      case 'a':
-        moveTetrominoLeft()
-      case 'd':
-        moveTetrominoRight()
-      case 'j':
-        spinTetromino()
-      case 'h':
-        holdTetronmino()
+      if !dead {
+        switch e.Ch {
+        case 'w':
+          dropTetromino()
+        case 's':
+          moveTetrominoDown()
+        case 'a':
+          moveTetrominoLeft()
+        case 'd':
+          moveTetrominoRight()
+        case 'j':
+          spinTetromino()
+        case 'h':
+          holdTetronmino()
+        }
       }
     default:
       termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)

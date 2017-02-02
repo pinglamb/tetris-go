@@ -25,7 +25,9 @@ const scorePaneOffsetY = holdPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth +
 func drawGame() {
   drawPanes()
   drawBoard(currentBoard)
-  drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+  if !dead {
+    drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+  }
   drawTetrominoOnNextPane(nextTetromino)
   if hasTetrominoHolded {
     drawTetrominoOnHoldPane(holdedTetromino)

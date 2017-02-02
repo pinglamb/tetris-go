@@ -15,6 +15,7 @@ var nextTetromino Tetromino
 var holdedTetromino Tetromino
 
 var hasTetrominoHolded = false
+var dead = false
 
 var gravity = 1
 
@@ -60,6 +61,16 @@ func addTetromino(t Tetromino) {
   currentTetrominoX = 5
   currentTetrominoY = 0
   currentTetrominoSpin = 0
+
+  if !isValidMove(currentTetrominoX, currentTetrominoY, currentTetrominoSpin) {
+    dead = true
+    currentTetrominoY--
+    for !isValidMove(currentTetrominoX, currentTetrominoY, currentTetrominoSpin) {
+      currentTetrominoY--
+    }
+    landTetromino()
+    endGame()
+  }
 }
 
 func randTetromino() Tetromino {
@@ -83,7 +94,9 @@ func landTetromino() {
   blocks := blocksOf(currentTetromino, currentTetrominoX, currentTetrominoY, currentTetrominoSpin)
 
   for _, block := range blocks {
-    currentBoard[block[1]][block[0]] = TetrominoColors[currentTetromino]
+    if block[1] >= 0 {
+      currentBoard[block[1]][block[0]] = TetrominoColors[currentTetromino]
+    }
   }
 
   clearFullRows()
@@ -143,19 +156,21 @@ func spinTetromino() {
 }
 
 func isValidMove(x, y, spin int) bool {
-  if x < 0 || y < 0 {
+  if x < 0 {
     return false
   }
 
   blocks := blocksOf(currentTetromino, x, y, spin)
 
   for _, block := range blocks {
-    if block[0] > (boardWidth - 1) || block[1] > (boardHeight - 1) {
-      return false
-    }
+    if block[1] >= 0 {
+      if block[0] > (boardWidth - 1) || block[1] > (boardHeight - 1) {
+        return false
+      }
 
-    if currentBoard[block[1]][block[0]] != termbox.ColorDefault {
-      return false
+      if currentBoard[block[1]][block[0]] != termbox.ColorDefault {
+        return false
+      }
     }
   }
 
@@ -166,8 +181,10 @@ func isTouchingGround(x, y int) bool {
   blocks := blocksOf(currentTetromino, x, y, currentTetrominoSpin)
 
   for _, block := range blocks {
-    if block[1] + 1 >= boardHeight || currentBoard[block[1] + 1][block[0]] != termbox.ColorDefault {
-      return true
+    if block[1] >= 0 {
+      if block[1] + 1 >= boardHeight || currentBoard[block[1] + 1][block[0]] != termbox.ColorDefault {
+        return true
+      }
     }
   }
 
