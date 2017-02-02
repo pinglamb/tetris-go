@@ -26,6 +26,7 @@ func drawGame() {
   drawPanes()
   drawBoard(currentBoard)
   drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+  drawTetrominoOnNextPane(nextTetromino)
 }
 
 func drawPanes() {

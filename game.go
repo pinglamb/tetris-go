@@ -11,6 +11,9 @@ var currentTetrominoSpin int
 var currentTetrominoX int
 var currentTetrominoY int
 
+var nextTetromino Tetromino
+var holdedTetromino Tetromino
+
 var gravity = 1
 
 var gameTicker *time.Ticker
@@ -20,7 +23,8 @@ func startGame() {
     currentBoard = append(currentBoard, newRow())
   }
 
-  nextTetromino()
+  nextTetromino = randTetromino()
+  newTetromino()
 
   speed := time.Duration(900 / gravity)
   gameTicker = time.NewTicker(time.Millisecond * speed)
@@ -36,24 +40,29 @@ func endGame() {
 }
 
 func tickGame() {
-  if isTouchingGround() {
+  if isTouchingGround(currentTetrominoX, currentTetrominoY) {
     landTetromino()
-    nextTetromino()
+    newTetromino()
   } else {
     moveTetrominoDown()
   }
 }
 
-func newTetromino() Tetromino {
+func newTetromino() {
+  currentTetromino = nextTetromino
+  currentTetrominoX = 4
+  currentTetrominoY = 0
+  currentTetrominoSpin = 0
+
+  nextTetromino = randTetromino()
+}
+
+func randTetromino() Tetromino {
   r := rand.New(rand.NewSource(time.Now().UnixNano()))
   return Tetrominos[r.Intn(7)]
 }
 
-func nextTetromino() {
-  currentTetromino = newTetromino()
-  currentTetrominoX = 4
-  currentTetrominoY = 0
-  currentTetrominoSpin = 0
+func holdTetronmino() {
 }
 
 func landTetromino() {
@@ -88,6 +97,13 @@ func moveTetrominoDown() {
 }
 
 func dropTetromino() {
+  newY := currentTetrominoY
+  for !isTouchingGround(currentTetrominoX, newY) {
+    newY++
+  }
+  currentTetrominoY = newY
+  landTetromino()
+  newTetromino()
 }
 
 func spinTetromino() {
@@ -132,8 +148,8 @@ func isValidMove(x, y, spin int) bool {
   return true
 }
 
-func isTouchingGround() bool {
-  blocks := blocksOf(currentTetromino, currentTetrominoX, currentTetrominoY, currentTetrominoSpin)
+func isTouchingGround(x, y int) bool {
+  blocks := blocksOf(currentTetromino, x, y, currentTetrominoSpin)
 
   for _, block := range blocks {
     if block[1] + 1 >= boardHeight || currentBoard[block[1] + 1][block[0]] != termbox.ColorDefault {

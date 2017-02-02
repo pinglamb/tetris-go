@@ -32,7 +32,7 @@ func main() {
 
       switch e.Ch {
       case 'w':
-        currentTetrominoY--
+        dropTetromino()
       case 's':
         moveTetrominoDown()
       case 'a':
