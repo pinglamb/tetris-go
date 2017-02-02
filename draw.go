@@ -22,7 +22,11 @@ const holdPaneOffsetY = nextPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 
 const scorePaneOffsetX = nextPaneOffsetX
 const scorePaneOffsetY = holdPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 2 * topPadding + 3
 
-var board [boardWidth][boardHeight]termbox.Attribute
+func drawGame() {
+  drawPanes()
+  drawBoard(currentBoard)
+  drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+}
 
 func drawPanes() {
   drawPane(boardOffsetX, boardOffsetY, boardWidth, boardHeight, " Player 1 ")
@@ -50,29 +54,10 @@ func drawPane(x, y, width, height int, title string) {
   }
 }
 
-func drawBoard() {
-  for i := 0; i < boardWidth; i++ {
-    for j := 0; j < boardHeight; j++ {
-      board[i][j] = termbox.ColorDefault
-    }
-  }
-
-  board[0][12] = termbox.ColorCyan
-  board[0][13] = termbox.ColorCyan
-  board[0][14] = termbox.ColorCyan
-  board[0][15] = termbox.ColorCyan
-  board[1][13] = termbox.ColorRed
-  board[1][14] = termbox.ColorRed
-  board[1][15] = termbox.ColorRed
-  board[2][15] = termbox.ColorRed
-  board[2][14] = termbox.ColorYellow
-  board[3][14] = termbox.ColorYellow
-  board[4][14] = termbox.ColorYellow
-  board[4][15] = termbox.ColorYellow
-
-  for i := 0; i < boardWidth; i++ {
-    for j := 0; j < boardHeight; j++ {
-      drawPoint(i, j, boardOffsetX + leftBorderWidth + leftPadding, boardOffsetY + topBorderWidth + topPadding, board[i][j])
+func drawBoard(board [][boardWidth]termbox.Attribute) {
+  for i := 0; i < boardHeight; i++ {
+    for j := 0; j < boardWidth; j++ {
+      drawPoint(j, i, boardOffsetX + leftBorderWidth + leftPadding, boardOffsetY + topBorderWidth + topPadding, board[i][j])
     }
   }
 }

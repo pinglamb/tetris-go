@@ -1,1 +1,194 @@
 package main
+
+import "time"
+import "math/rand"
+import "github.com/nsf/termbox-go"
+
+var currentBoard [][boardWidth]termbox.Attribute
+
+var currentTetromino Tetromino
+var currentTetrominoSpin int
+var currentTetrominoX int
+var currentTetrominoY int
+
+var gravity = 1
+
+var gameTicker *time.Ticker
+
+func startGame() {
+  for i := 0; i < boardHeight; i++ {
+    currentBoard = append(currentBoard, newRow())
+  }
+
+  nextTetromino()
+
+  speed := time.Duration(900 / gravity)
+  gameTicker = time.NewTicker(time.Millisecond * speed)
+  go func() {
+    for _ = range gameTicker.C {
+      tickGame()
+    }
+  }()
+}
+
+func endGame() {
+  gameTicker.Stop()
+}
+
+func tickGame() {
+  if isTouchingGround() {
+    landTetromino()
+    nextTetromino()
+  } else {
+    moveTetrominoDown()
+  }
+}
+
+func newTetromino() Tetromino {
+  r := rand.New(rand.NewSource(time.Now().UnixNano()))
+  return Tetrominos[r.Intn(7)]
+}
+
+func nextTetromino() {
+  currentTetromino = newTetromino()
+  currentTetrominoX = 4
+  currentTetrominoY = 0
+  currentTetrominoSpin = 0
+}
+
+func landTetromino() {
+  blocks := blocksOf(currentTetromino, currentTetrominoX, currentTetrominoY, currentTetrominoSpin)
+
+  for _, block := range blocks {
+    currentBoard[block[1]][block[0]] = TetrominoColors[currentTetromino]
+  }
+
+  clearFullRows()
+}
+
+func moveTetrominoLeft() {
+  newX := currentTetrominoX - 1
+  if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
+    currentTetrominoX = newX
+  }
+}
+
+func moveTetrominoRight() {
+  newX := currentTetrominoX + 1
+  if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
+    currentTetrominoX = newX
+  }
+}
+
+func moveTetrominoDown() {
+  newY := currentTetrominoY + 1
+  if isValidMove(currentTetrominoX, newY, currentTetrominoSpin) {
+    currentTetrominoY = newY
+  }
+}
+
+func dropTetromino() {
+}
+
+func spinTetromino() {
+  newSpin := currentTetrominoSpin + 1
+  if isValidMove(currentTetrominoX, currentTetrominoY, newSpin) {
+    currentTetrominoSpin = newSpin
+    return
+  }
+
+  newX := currentTetrominoX - 1
+  if isValidMove(newX, currentTetrominoY, newSpin) {
+    currentTetrominoX = newX
+    currentTetrominoSpin = newSpin
+    return
+  }
+
+  newY := currentTetrominoY - 1
+  if isValidMove(currentTetrominoX, newY, newSpin) {
+    currentTetrominoY = newY
+    currentTetrominoSpin = newSpin
+    return
+  }
+}
+
+func isValidMove(x, y, spin int) bool {
+  if x < 0 || y < 0 {
+    return false
+  }
+
+  blocks := blocksOf(currentTetromino, x, y, spin)
+
+  for _, block := range blocks {
+    if block[0] > (boardWidth - 1) || block[1] > (boardHeight - 1) {
+      return false
+    }
+
+    if currentBoard[block[1]][block[0]] != termbox.ColorDefault {
+      return false
+    }
+  }
+
+  return true
+}
+
+func isTouchingGround() bool {
+  blocks := blocksOf(currentTetromino, currentTetrominoX, currentTetrominoY, currentTetrominoSpin)
+
+  for _, block := range blocks {
+    if block[1] + 1 >= boardHeight || currentBoard[block[1] + 1][block[0]] != termbox.ColorDefault {
+      return true
+    }
+  }
+
+  return false
+}
+
+func blocksOf(t Tetromino, x, y, spin int) [4][2]int {
+  normalizedSpin := spin % len(TetrominoShapes[currentTetromino])
+
+  var blocks [4][2]int
+  var i = 0
+  for r, cols := range TetrominoShapes[currentTetromino][normalizedSpin] {
+    for c, flag := range cols {
+      if flag == 1 {
+        blocks[i] = [2]int {x + c, y + r}
+        i++
+      }
+    }
+  }
+  return blocks
+}
+
+func newRow() [boardWidth]termbox.Attribute {
+  var row [boardWidth]termbox.Attribute
+  for i := 0; i < boardWidth; i++ {
+    row[i] = termbox.ColorDefault
+  }
+
+  return row
+}
+
+func clearFullRows() {
+  var fullRows []int
+  for r := 0; r < boardHeight; r++ {
+    if isFullRow(r) {
+      fullRows = append(fullRows, r)
+    }
+  }
+
+  for _, r := range fullRows {
+    currentBoard = append(currentBoard[:r], currentBoard[r+1:]...)
+    currentBoard = append([][boardWidth]termbox.Attribute { newRow() }, currentBoard...)
+  }
+}
+
+func isFullRow(r int) bool {
+  for c := 0; c < boardWidth; c++ {
+    if currentBoard[r][c] == termbox.ColorDefault {
+      return false
+    }
+  }
+
+  return true
+}

@@ -14,6 +14,16 @@ const (
   TetrominoZ
 )
 
+var Tetrominos = []Tetromino {
+  TetrominoI,
+  TetrominoJ,
+  TetrominoL,
+  TetrominoO,
+  TetrominoS,
+  TetrominoT,
+  TetrominoZ,
+}
+
 var TetrominoShapes = [][][][]int {
   {{{1}, {1}, {1}, {1}}, {{1, 1, 1, 1}}},
   {{{0, 1}, {0, 1}, {1, 1}}, {{1}, {1, 1, 1}}, {{1, 1}, {1}, {1}}, {{1, 1, 1}, {0, 0, 1}}},

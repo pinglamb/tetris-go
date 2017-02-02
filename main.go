@@ -18,23 +18,33 @@ func main() {
     }
   }()
 
+  startGame()
+
   for {
     select {
     case e := <- eventQueue:
-      if e.Type == termbox.EventKey && (e.Ch == 'q' || e.Key == termbox.KeyEsc) {
-        return
+      if e.Type == termbox.EventKey {
+        if (e.Ch == 'q' || e.Key == termbox.KeyEsc) {
+          endGame()
+          return
+        }
+      }
+
+      switch e.Ch {
+      case 'w':
+        currentTetrominoY--
+      case 's':
+        moveTetrominoDown()
+      case 'a':
+        moveTetrominoLeft()
+      case 'd':
+        moveTetrominoRight()
+      case 'j':
+        spinTetromino()
       }
     default:
       termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-
-      drawPanes()
-
-      drawTetrominoOnBoard(TetrominoI, 0, 4, 0)
-      drawTetrominoOnNextPane(TetrominoI)
-      drawTetrominoOnHoldPane(TetrominoT)
-
-      drawBoard()
-
+      drawGame()
       termbox.Flush()
 
       time.Sleep(10 * time.Millisecond)
