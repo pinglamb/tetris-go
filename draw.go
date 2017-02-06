@@ -32,7 +32,6 @@ func drawGame() {
   if hasTetrominoHolded {
     drawTetrominoOnHoldPane(holdedTetromino)
   }
-
   drawScore(gameScore)
 }
 
