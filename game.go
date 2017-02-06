@@ -21,6 +21,8 @@ var gravity = 1
 
 var gameTicker *time.Ticker
 
+var gameScore = ""
+
 func startGame() {
   for i := 0; i < boardHeight; i++ {
     currentBoard = append(currentBoard, newRow())
@@ -238,4 +240,8 @@ func isFullRow(r int) bool {
   }
 
   return true
+}
+
+func setScore(score string) {
+  gameScore = score
 }

@@ -32,6 +32,8 @@ func drawGame() {
   if hasTetrominoHolded {
     drawTetrominoOnHoldPane(holdedTetromino)
   }
+
+  drawScore(gameScore)
 }
 
 func drawPanes() {
@@ -78,6 +80,12 @@ func drawTetrominoOnNextPane(t Tetromino) {
 
 func drawTetrominoOnHoldPane(t Tetromino) {
   drawTetromino(t, 0, 0, 0, holdPaneOffsetX + leftBorderWidth + leftPadding, holdPaneOffsetY + topBorderWidth + topPadding)
+}
+
+func drawScore(score string) {
+  for i, ch := range score {
+    termbox.SetCell(scorePaneOffsetX + leftBorderWidth + leftPadding + i + 4, scorePaneOffsetY + topBorderWidth + topPadding, ch, termbox.ColorWhite, termbox.ColorBlack)
+  }
 }
 
 func drawTetromino(t Tetromino, spin int, x, y, offsetX, offsetY int) {
