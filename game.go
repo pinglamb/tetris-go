@@ -88,14 +88,16 @@ func randTetromino() Tetromino {
 }
 
 func holdTetronmino() {
-  if hasTetrominoHolded {
-    tmp := currentTetromino
-    addTetromino(holdedTetromino)
-    holdedTetromino = tmp
-  } else {
-    hasTetrominoHolded = true
-    holdedTetromino = currentTetromino
-    newTetromino()
+  if gameStarted {
+    if hasTetrominoHolded {
+      tmp := currentTetromino
+      addTetromino(holdedTetromino)
+      holdedTetromino = tmp
+    } else {
+      hasTetrominoHolded = true
+      holdedTetromino = currentTetromino
+      newTetromino()
+    }
   }
 }
 
@@ -112,55 +114,65 @@ func landTetromino() {
 }
 
 func moveTetrominoLeft() {
-  newX := currentTetrominoX - 1
-  if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
-    currentTetrominoX = newX
+  if gameStarted {
+    newX := currentTetrominoX - 1
+    if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
+      currentTetrominoX = newX
+    }
   }
 }
 
 func moveTetrominoRight() {
-  newX := currentTetrominoX + 1
-  if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
-    currentTetrominoX = newX
+  if gameStarted {
+    newX := currentTetrominoX + 1
+    if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
+      currentTetrominoX = newX
+    }
   }
 }
 
 func moveTetrominoDown() {
-  newY := currentTetrominoY + 1
-  if isValidMove(currentTetrominoX, newY, currentTetrominoSpin) {
-    currentTetrominoY = newY
+  if gameStarted {
+    newY := currentTetrominoY + 1
+    if isValidMove(currentTetrominoX, newY, currentTetrominoSpin) {
+      currentTetrominoY = newY
+    }
   }
 }
 
 func dropTetromino() {
-  newY := currentTetrominoY
-  for !isTouchingGround(currentTetrominoX, newY) {
-    newY++
+  if gameStarted {
+    newY := currentTetrominoY
+    for !isTouchingGround(currentTetrominoX, newY) {
+      newY++
+    }
+    currentTetrominoY = newY
+    landTetromino()
+    newTetromino()
   }
-  currentTetrominoY = newY
-  landTetromino()
-  newTetromino()
 }
 
 func spinTetromino() {
-  newSpin := currentTetrominoSpin + 1
-  if isValidMove(currentTetrominoX, currentTetrominoY, newSpin) {
-    currentTetrominoSpin = newSpin
-    return
-  }
+  if gameStarted {
+    newSpin := currentTetrominoSpin + 1
+    if isValidMove(currentTetrominoX, currentTetrominoY, newSpin) {
+      currentTetrominoSpin = newSpin
+      return
+    }
 
-  newX := currentTetrominoX - 1
-  if isValidMove(newX, currentTetrominoY, newSpin) {
-    currentTetrominoX = newX
-    currentTetrominoSpin = newSpin
-    return
-  }
+    newX := currentTetrominoX - 1
+    if isValidMove(newX, currentTetrominoY, newSpin) {
+      currentTetrominoX = newX
+      currentTetrominoSpin = newSpin
+      return
+    }
 
-  newY := currentTetrominoY - 1
-  if isValidMove(currentTetrominoX, newY, newSpin) {
-    currentTetrominoY = newY
-    currentTetrominoSpin = newSpin
-    return
+    newY := currentTetrominoY - 1
+    if isValidMove(currentTetrominoX, newY, newSpin) {
+      currentTetrominoY = newY
+      currentTetrominoSpin = newSpin
+      return
+    }
   }
 }
 
@@ -251,4 +263,8 @@ func isFullRow(r int) bool {
 
 func setScore(score string) {
   gameScore = score
+}
+
+func isMP() bool {
+  return peerInfo != ""
 }

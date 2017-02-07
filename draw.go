@@ -23,6 +23,15 @@ const holdPaneOffsetY = nextPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 
 const scorePaneOffsetX = nextPaneOffsetX
 const scorePaneOffsetY = holdPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 2 * topPadding + 3
 
+const peerNextPaneOffsetX = 120
+const peerNextPaneOffsetY = boardOffsetY
+const peerHoldPaneOffsetX = peerNextPaneOffsetX
+const peerHoldPaneOffsetY = peerNextPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 2 * topPadding + 3
+const peerScorePaneOffsetX = peerNextPaneOffsetX
+const peerScorePaneOffsetY = peerHoldPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 2 * topPadding + 3
+const peerBoardOffsetX = peerNextPaneOffsetX + 4 * cellWidth + 2 * leftBorderWidth + leftPadding * 2 + 5
+const peerBoardOffsetY = boardOffsetY
+
 var log string
 
 func drawGame() {
@@ -30,17 +39,21 @@ func drawGame() {
   drawPanes()
 
   if gameStarted {
-    drawBoard(currentBoard)
+    drawBoard(boardOffsetX, boardOffsetY, currentBoard)
     if !dead {
-      drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+      drawTetrominoOnBoard(boardOffsetX, boardOffsetY, currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
     }
-    drawTetrominoOnNextPane(nextTetromino)
+    drawTetrominoOnNextPane(nextPaneOffsetX, nextPaneOffsetY, nextTetromino)
     if hasTetrominoHolded {
-      drawTetrominoOnHoldPane(holdedTetromino)
+      drawTetrominoOnHoldPane(holdPaneOffsetX, holdPaneOffsetY, holdedTetromino)
     }
   }
 
-  drawScore(gameScore)
+  if isMP() {
+    drawPeerGame()
+  }
+
+  drawScore(scorePaneOffsetX, scorePaneOffsetY, gameScore)
 }
 
 func setLog(t string) {
@@ -92,29 +105,29 @@ func drawPane(x, y, width, height int, title string) {
   }
 }
 
-func drawBoard(board [][boardWidth]termbox.Attribute) {
+func drawBoard(offsetX, offsetY int, board [][boardWidth]termbox.Attribute) {
   for i := 0; i < boardHeight; i++ {
     for j := 0; j < boardWidth; j++ {
-      drawPoint(j, i, boardOffsetX + leftBorderWidth + leftPadding, boardOffsetY + topBorderWidth + topPadding, board[i][j])
+      drawPoint(j, i, offsetX + leftBorderWidth + leftPadding, offsetY + topBorderWidth + topPadding, board[i][j])
     }
   }
 }
 
-func drawTetrominoOnBoard(t Tetromino, spin int, x, y int) {
-  drawTetromino(t, spin, x, y, boardOffsetX + leftBorderWidth + leftPadding, boardOffsetY + topBorderWidth + topPadding)
+func drawTetrominoOnBoard(offsetX, offsetY int, t Tetromino, spin int, x, y int) {
+  drawTetromino(t, spin, x, y, offsetX + leftBorderWidth + leftPadding, offsetY + topBorderWidth + topPadding)
 }
 
-func drawTetrominoOnNextPane(t Tetromino) {
-  drawTetromino(t, 0, 1, 0, nextPaneOffsetX + leftBorderWidth + leftPadding, nextPaneOffsetY + topBorderWidth + topPadding)
+func drawTetrominoOnNextPane(offsetX, offsetY int, t Tetromino) {
+  drawTetromino(t, 0, 1, 0, offsetX + leftBorderWidth + leftPadding, offsetY + topBorderWidth + topPadding)
 }
 
-func drawTetrominoOnHoldPane(t Tetromino) {
-  drawTetromino(t, 0, 0, 0, holdPaneOffsetX + leftBorderWidth + leftPadding, holdPaneOffsetY + topBorderWidth + topPadding)
+func drawTetrominoOnHoldPane(offsetX, offsetY int, t Tetromino) {
+  drawTetromino(t, 0, 0, 0, offsetX + leftBorderWidth + leftPadding, offsetY + topBorderWidth + topPadding)
 }
 
-func drawScore(score string) {
+func drawScore(offsetX, offsetY int, score string) {
   for i, ch := range score {
-    termbox.SetCell(scorePaneOffsetX + leftBorderWidth + leftPadding + i + 4, scorePaneOffsetY + topBorderWidth + topPadding, ch, termbox.ColorWhite, termbox.ColorBlack)
+    termbox.SetCell(offsetX + leftBorderWidth + leftPadding + i + 4, offsetY + topBorderWidth + topPadding, ch, termbox.ColorWhite, termbox.ColorBlack)
   }
 }
 
@@ -134,6 +147,24 @@ func drawPoint(x, y, offsetX, offsetY int, color termbox.Attribute) {
   for i := 0; i < cellWidth; i++ {
     for j := 0; j < cellHeight; j++ {
       termbox.SetCell(offsetX + x * cellWidth + i, offsetY + y * cellHeight + j, ' ', color, color)
+    }
+  }
+}
+
+func drawPeerGame() {
+  drawPane(peerBoardOffsetX, peerBoardOffsetY, boardWidth, boardHeight, " Player 2 ")
+  drawPane(peerNextPaneOffsetX, peerNextPaneOffsetY, 4, 4, " Next ")
+  drawPane(peerHoldPaneOffsetX, peerHoldPaneOffsetY, 4, 4, " Hold ")
+  drawPane(peerScorePaneOffsetX, peerScorePaneOffsetY, 4, 1, " Score ")
+
+  if gameStarted {
+    drawBoard(peerBoardOffsetX, peerBoardOffsetY, currentBoard)
+    if !dead {
+      drawTetrominoOnBoard(peerBoardOffsetX, peerBoardOffsetY, currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+    }
+    drawTetrominoOnNextPane(peerNextPaneOffsetX, peerNextPaneOffsetY, nextTetromino)
+    if hasTetrominoHolded {
+      drawTetrominoOnHoldPane(peerHoldPaneOffsetX, peerHoldPaneOffsetY, holdedTetromino)
     }
   }
 }
