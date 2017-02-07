@@ -121,6 +121,13 @@ func serializeGame() string {
 func deserializePeerGame(data string) {
   info := strings.Split(data, "/")
 
+  for r, s := range strings.Split(info[0], ";") {
+    for c, ss := range strings.Split(s, "") {
+      i, _ := strconv.Atoi(ss)
+      peerCurrentBoard[r][c] = termbox.Attribute(i)
+    }
+  }
+
   i, _ := strconv.Atoi(info[1])
   peerCurrentTetromino = Tetromino(i)
   peerCurrentTetrominoSpin, _ = strconv.Atoi(info[2])
