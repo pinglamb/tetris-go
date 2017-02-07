@@ -19,11 +19,13 @@ var dead = false
 
 var gravity = 1
 
+var gameStarted = false
 var gameTicker *time.Ticker
 
 var gameScore = ""
 
 func startGame() {
+  currentBoard = [][boardWidth]termbox.Attribute {}
   for i := 0; i < boardHeight; i++ {
     currentBoard = append(currentBoard, newRow())
   }
@@ -38,10 +40,15 @@ func startGame() {
       tickGame()
     }
   }()
+
+  gameStarted = true
 }
 
 func endGame() {
-  gameTicker.Stop()
+  if gameStarted {
+    gameTicker.Stop()
+    gameStarted = false
+  }
 }
 
 func tickGame() {

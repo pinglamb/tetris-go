@@ -52,8 +52,6 @@ func main() {
     }
   }()
 
-  startGame()
-
   for {
     select {
     case e := <- eventQueue:
@@ -78,6 +76,9 @@ func main() {
           spinTetromino()
         case 'h':
           holdTetronmino()
+        case 'n':
+          endGame()
+          startGame()
         case 'p':
           peer, err := net.ResolveUDPAddr("udp", peerAddr)
           local, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")

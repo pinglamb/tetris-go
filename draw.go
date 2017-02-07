@@ -23,16 +23,36 @@ const scorePaneOffsetX = nextPaneOffsetX
 const scorePaneOffsetY = holdPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 2 * topPadding + 3
 
 func drawGame() {
+  drawInstructions()
   drawPanes()
-  drawBoard(currentBoard)
-  if !dead {
-    drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+
+  if gameStarted {
+    drawBoard(currentBoard)
+    if !dead {
+      drawTetrominoOnBoard(currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+    }
+    drawTetrominoOnNextPane(nextTetromino)
+    if hasTetrominoHolded {
+      drawTetrominoOnHoldPane(holdedTetromino)
+    }
+    drawScore(gameScore)
   }
-  drawTetrominoOnNextPane(nextTetromino)
-  if hasTetrominoHolded {
-    drawTetrominoOnHoldPane(holdedTetromino)
+}
+
+func drawText(x, y int, text string) {
+  for i, ch := range text {
+    termbox.SetCell(x + i, y, ch, termbox.ColorWhite, termbox.ColorBlack)
   }
-  drawScore(gameScore)
+}
+
+func drawInstructions() {
+  _, h := termbox.Size()
+  drawText(boardOffsetX, h - 8, "n: start/restart the game")
+  drawText(boardOffsetX, h - 7, "a, d: left/right")
+  drawText(boardOffsetX, h - 6, "w: drop")
+  drawText(boardOffsetX, h - 5, "j: spin")
+  drawText(boardOffsetX, h - 4, "h: hold")
+  drawText(boardOffsetX, h - 3, "[Your IP]:10001 to connect")
 }
 
 func drawPanes() {
