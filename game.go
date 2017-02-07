@@ -49,6 +49,17 @@ func startGame() {
     }
   }()
 
+  if isMP() {
+    peerCurrentBoard = [][boardWidth]termbox.Attribute {}
+    for i := 0; i < boardHeight; i++ {
+      peerCurrentBoard = append(peerCurrentBoard, newRow())
+    }
+
+    if !asPeer {
+      sendCmd("start", "")
+    }
+  }
+
   gameStarted = true
 }
 

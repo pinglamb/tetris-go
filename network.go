@@ -81,6 +81,9 @@ func readCmd() {
       peerInfo = fmt.Sprintf("%s:%s", ip, port)
       connectPeerIfSet()
       pongPeer()
+    case "start":
+      endGame()
+      startGame()
     }
   }
 }
