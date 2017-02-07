@@ -1,8 +1,12 @@
 package main
 
+import "fmt"
 import "time"
 import "math/rand"
 import "github.com/nsf/termbox-go"
+import "bytes"
+import "strings"
+import "strconv"
 
 var gravity = 1
 
@@ -55,6 +59,7 @@ func startGame() {
       peerCurrentBoard = append(peerCurrentBoard, newRow())
     }
 
+
     if !asPeer {
       sendCmd("start", "")
     }
@@ -74,9 +79,62 @@ func tickGame() {
   if isTouchingGround(currentTetrominoX, currentTetrominoY) {
     landTetromino()
     newTetromino()
+
+    syncGame()
   } else {
     moveTetrominoDown()
   }
+}
+
+func syncGame() {
+  if isMP() {
+    go func() {
+      sendCmd("sync", serializeGame())
+    }()
+  }
+}
+
+func serializeGame() string {
+  var buffer bytes.Buffer
+
+  for i := 0; i < boardHeight; i++ {
+    for j := 0; j < boardWidth; j++ {
+      buffer.WriteString(fmt.Sprintf("%d", currentBoard[i][j]))
+    }
+    if i < boardHeight - 1 {
+      buffer.WriteString(";")
+    }
+  }
+
+  buffer.WriteString(fmt.Sprintf("/%d", currentTetromino))
+  buffer.WriteString(fmt.Sprintf("/%d", currentTetrominoSpin))
+  buffer.WriteString(fmt.Sprintf("/%d", currentTetrominoX))
+  buffer.WriteString(fmt.Sprintf("/%d", currentTetrominoY))
+  buffer.WriteString(fmt.Sprintf("/%d", nextTetromino))
+  buffer.WriteString(fmt.Sprintf("/%d", holdedTetromino))
+  buffer.WriteString(fmt.Sprintf("/%d", btoi(hasTetrominoHolded)))
+  buffer.WriteString(fmt.Sprintf("/%d", btoi(dead)))
+
+  return buffer.String()
+}
+
+func deserializePeerGame(data string) {
+  info := strings.Split(data, "/")
+
+  setLog(info[1])
+  i, _ := strconv.Atoi(info[1])
+  peerCurrentTetromino = Tetromino(i)
+  peerCurrentTetrominoSpin, _ = strconv.Atoi(info[2])
+  peerCurrentTetrominoX, _ = strconv.Atoi(info[3])
+  peerCurrentTetrominoY, _ = strconv.Atoi(info[4])
+  i, _ = strconv.Atoi(info[5])
+  peerNextTetromino = Tetromino(i)
+  i, _ = strconv.Atoi(info[6])
+  peerHoldedTetromino = Tetromino(i)
+  i, _ = strconv.Atoi(info[7])
+  peerHasTetrominoHolded = itob(i)
+  i, _ = strconv.Atoi(info[8])
+  peerDead = itob(i)
 }
 
 func newTetromino() {
@@ -117,6 +175,8 @@ func holdTetronmino() {
       holdedTetromino = currentTetromino
       newTetromino()
     }
+
+    syncGame()
   }
 }
 
@@ -130,6 +190,8 @@ func landTetromino() {
   }
 
   clearFullRows()
+
+  syncGame()
 }
 
 func moveTetrominoLeft() {
@@ -138,6 +200,8 @@ func moveTetrominoLeft() {
     if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
       currentTetrominoX = newX
     }
+
+    syncGame()
   }
 }
 
@@ -147,6 +211,8 @@ func moveTetrominoRight() {
     if isValidMove(newX, currentTetrominoY, currentTetrominoSpin) {
       currentTetrominoX = newX
     }
+
+    syncGame()
   }
 }
 
@@ -156,6 +222,8 @@ func moveTetrominoDown() {
     if isValidMove(currentTetrominoX, newY, currentTetrominoSpin) {
       currentTetrominoY = newY
     }
+
+    syncGame()
   }
 }
 
@@ -168,6 +236,8 @@ func dropTetromino() {
     currentTetrominoY = newY
     landTetromino()
     newTetromino()
+
+    syncGame()
   }
 }
 
@@ -286,4 +356,16 @@ func setScore(score string) {
 
 func isMP() bool {
   return peerInfo != ""
+}
+
+func btoi(b bool) int {
+  if b {
+    return 1
+  } else {
+    return 0
+  }
+}
+
+func itob(i int) bool {
+  return i != 0
 }

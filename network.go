@@ -84,6 +84,8 @@ func readCmd() {
     case "start":
       endGame()
       startGame()
+    case "sync":
+      deserializePeerGame(body)
     }
   }
 }
