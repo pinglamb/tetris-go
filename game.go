@@ -4,25 +4,33 @@ import "time"
 import "math/rand"
 import "github.com/nsf/termbox-go"
 
+var gravity = 1
+
+var gameStarted = false
+var gameTicker *time.Ticker
+
 var currentBoard [][boardWidth]termbox.Attribute
 
 var currentTetromino Tetromino
 var currentTetrominoSpin int
 var currentTetrominoX int
 var currentTetrominoY int
-
 var nextTetromino Tetromino
 var holdedTetromino Tetromino
-
 var hasTetrominoHolded = false
 var dead = false
-
-var gravity = 1
-
-var gameStarted = false
-var gameTicker *time.Ticker
-
 var gameScore = ""
+
+var peerCurrentBoard [][boardWidth]termbox.Attribute
+var peerCurrentTetromino Tetromino
+var peerCurrentTetrominoSpin int
+var peerCurrentTetrominoX int
+var peerCurrentTetrominoY int
+var peerNextTetromino Tetromino
+var peerHoldedTetromino Tetromino
+var peerHasTetrominoHolded = false
+var peerDead = false
+var peerScore = ""
 
 func startGame() {
   currentBoard = [][boardWidth]termbox.Attribute {}

@@ -5,6 +5,7 @@ import "net"
 import "strings"
 
 var myPort string
+var asPeer = false
 
 var hostInfo string
 var hostAddr *net.UDPAddr

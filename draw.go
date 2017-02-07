@@ -158,13 +158,13 @@ func drawPeerGame() {
   drawPane(peerScorePaneOffsetX, peerScorePaneOffsetY, 4, 1, " Score ")
 
   if gameStarted {
-    drawBoard(peerBoardOffsetX, peerBoardOffsetY, currentBoard)
-    if !dead {
-      drawTetrominoOnBoard(peerBoardOffsetX, peerBoardOffsetY, currentTetromino, currentTetrominoSpin, currentTetrominoX, currentTetrominoY)
+    drawBoard(peerBoardOffsetX, peerBoardOffsetY, peerCurrentBoard)
+    if !peerDead {
+      drawTetrominoOnBoard(peerBoardOffsetX, peerBoardOffsetY, peerCurrentTetromino, peerCurrentTetrominoSpin, peerCurrentTetrominoX, peerCurrentTetrominoY)
     }
-    drawTetrominoOnNextPane(peerNextPaneOffsetX, peerNextPaneOffsetY, nextTetromino)
-    if hasTetrominoHolded {
-      drawTetrominoOnHoldPane(peerHoldPaneOffsetX, peerHoldPaneOffsetY, holdedTetromino)
+    drawTetrominoOnNextPane(peerNextPaneOffsetX, peerNextPaneOffsetY, peerNextTetromino)
+    if peerHasTetrominoHolded {
+      drawTetrominoOnHoldPane(peerHoldPaneOffsetX, peerHoldPaneOffsetY, peerHoldedTetromino)
     }
   }
 }

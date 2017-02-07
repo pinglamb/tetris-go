@@ -15,6 +15,8 @@ func main() {
   flag.StringVar(&peerInfo, "peer", "", "Peer IP/Port to connect")
   flag.Parse()
 
+  asPeer = peerInfo != ""
+
   err := termbox.Init()
   panicIfError(err)
   defer termbox.Close()
@@ -58,8 +60,10 @@ func main() {
         case 'h':
           holdTetronmino()
         case 'n':
-          endGame()
-          startGame()
+          if !asPeer {
+            endGame()
+            startGame()
+          }
         }
       }
     default:
