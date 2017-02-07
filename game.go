@@ -121,7 +121,6 @@ func serializeGame() string {
 func deserializePeerGame(data string) {
   info := strings.Split(data, "/")
 
-  setLog(info[1])
   i, _ := strconv.Atoi(info[1])
   peerCurrentTetromino = Tetromino(i)
   peerCurrentTetrominoSpin, _ = strconv.Atoi(info[2])
