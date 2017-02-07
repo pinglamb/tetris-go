@@ -1,5 +1,6 @@
 package main
 
+import "fmt"
 import "github.com/nsf/termbox-go"
 
 const cellWidth = 5
@@ -22,6 +23,8 @@ const holdPaneOffsetY = nextPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 
 const scorePaneOffsetX = nextPaneOffsetX
 const scorePaneOffsetY = holdPaneOffsetY + 4 * cellHeight + 2 * topBorderWidth + 2 * topPadding + 3
 
+var log string
+
 func drawGame() {
   drawInstructions()
   drawPanes()
@@ -35,8 +38,13 @@ func drawGame() {
     if hasTetrominoHolded {
       drawTetrominoOnHoldPane(holdedTetromino)
     }
-    drawScore(gameScore)
   }
+
+  drawScore(gameScore)
+}
+
+func setLog(t string) {
+  log = t
 }
 
 func drawText(x, y int, text string) {
@@ -47,12 +55,15 @@ func drawText(x, y int, text string) {
 
 func drawInstructions() {
   _, h := termbox.Size()
-  drawText(boardOffsetX, h - 8, "n: start/restart the game")
-  drawText(boardOffsetX, h - 7, "a, d: left/right")
-  drawText(boardOffsetX, h - 6, "w: drop")
-  drawText(boardOffsetX, h - 5, "j: spin")
-  drawText(boardOffsetX, h - 4, "h: hold")
-  drawText(boardOffsetX, h - 3, "[Your IP]:10001 to connect")
+  shift := 9
+  drawText(boardOffsetX, h - shift, "n: start/restart the game")
+  drawText(boardOffsetX, h - shift + 1, "a, d: left/right")
+  drawText(boardOffsetX, h - shift + 2, "w: drop")
+  drawText(boardOffsetX, h - shift + 3, "j: spin")
+  drawText(boardOffsetX, h - shift + 4, "h: hold")
+  drawText(boardOffsetX, h - shift + 5, fmt.Sprintf("[Your IP]:%s to connect", myPort))
+  drawText(boardOffsetX, h - shift + 6, fmt.Sprintf("Peer: %s", peerInfo))
+  drawText(boardOffsetX, h - shift + 7, fmt.Sprintf("Log: %s", log))
 }
 
 func drawPanes() {
